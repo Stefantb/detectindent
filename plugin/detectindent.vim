@@ -140,22 +140,24 @@ fun! <SID>DetectIndent()
         let l:verbose_msg = "Detected tabs only and no spaces"
         setl noexpandtab
         if s:GetValue("detectindent_preferred_indent")
-            let &l:shiftwidth  = g:detectindent_preferred_indent
             let &l:tabstop     = g:detectindent_preferred_indent
+            let &l:shiftwidth  = 0
         endif
 
     elseif l:has_leading_spaces && ! l:has_leading_tabs
         " spaces only, no tabs
         let l:verbose_msg = "Detected spaces only and no tabs"
         setl expandtab
-        let &l:shiftwidth  = l:shortest_leading_spaces_run
-        let &l:softtabstop = l:shortest_leading_spaces_run
+        let &l:tabstop = l:shortest_leading_spaces_run
+        let &l:shiftwidth  = 0
+        let &l:softtabstop = 0
+
 
     elseif l:has_leading_spaces && l:has_leading_tabs && ! s:GetValue("detectindent_preferred_when_mixed")
         " spaces and tabs
         let l:verbose_msg = "Detected spaces and tabs"
         setl noexpandtab
-        let &l:shiftwidth = l:shortest_leading_spaces_run
+        let &l:shiftwidth = 0
 
         " mmmm, time to guess how big tabs are
         if l:longest_leading_spaces_run <= 2
@@ -172,12 +174,13 @@ fun! <SID>DetectIndent()
         if s:GetValue("detectindent_preferred_indent") &&
                     \ (s:GetValue("detectindent_preferred_expandtab"))
             setl expandtab
-            let &l:shiftwidth  = g:detectindent_preferred_indent
-            let &l:softtabstop = g:detectindent_preferred_indent
+            let &l:tabstop     = g:detectindent_preferred_indent
+            let &l:shiftwidth  = 0
+            let &l:softtabstop = 0
         elseif s:GetValue("detectindent_preferred_indent")
             setl noexpandtab
-            let &l:shiftwidth  = g:detectindent_preferred_indent
             let &l:tabstop     = g:detectindent_preferred_indent
+            let &l:shiftwidth  = 0
         elseif s:GetValue("detectindent_preferred_expandtab")
             setl expandtab
         else
@@ -203,6 +206,8 @@ fun! <SID>DetectIndent()
         endfor
         if len(changed_msg)
           echo "Initial buffer settings changed:" join(changed_msg, ", ")
+        else
+          echo "No indent settings changed."
         endif
     endif
 endfun
